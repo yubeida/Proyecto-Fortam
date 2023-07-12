@@ -1,0 +1,26 @@
+package com.fortam23.fortamjava.controlador;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+import com.fortam23.fortamjava.servicio.UsuarioServicio;
+
+@Controller
+public class RegistroControlador {
+	// Se importa del paquete service
+    @Autowired
+	private UsuarioServicio servicio;
+	//Se tiene en cuenta el archivo html a utilizar
+	@GetMapping("/login")
+	public String iniciarSesion() {
+		return "login";
+	}
+	//el modelo a trabajar que en este caso es el de usuario y se crea la lista de los usuario registrados
+	@GetMapping("/")
+	public String verPaginaDeInicio(Model modelo) {
+		modelo.addAttribute("usuarios", servicio.listarUsuarios());
+		return "index";
+	}
+}

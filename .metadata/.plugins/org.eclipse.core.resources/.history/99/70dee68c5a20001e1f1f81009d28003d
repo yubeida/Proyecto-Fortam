@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="ISO-8859-1">
+    <title></title>
+    <meta name="viewport"
+        content="width=device-width, user-scalable=yes, initial-scale=1.0, maximum-scale=3.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
+    <link th:href="@{/css/estilos.css}" rel="stylesheet" />
+
+
+</head>
+
+<body>
+	/*/registro configurado en el paquete controller*/
+    <form class="formulario" th:action="@{/registro}" method="post" th:object="${usuario}">
+
+        <h1>Registrate</h1>
+        <div class="contenedor">
+			/*Datos a ingresar*/
+            <div class="input-contenedor">
+                <i class="fas fa-user icon"></i>
+                <input type="text" for="nombre" id="nombre" th:field="*{nombre}" required autofocus="autofocus"
+                    placeholder="Nombre Completo">
+
+            </div>
+
+            <div class="input-contenedor">
+                <i class="fas fa-envelope icon"></i>
+                <input type="text" for="identificacion" id="identificacion" th:field="*{identificacion}" required
+                    autofocus="autofocus" placeholder="Identificacion">
+
+            </div>
+
+            <div class="input-contenedor">
+                <i class="fas fa-envelope icon"></i>
+                <input type="text" for="email" id="email" th:field="*{email}" required autofocus="autofocus"
+                    placeholder="Correo Electronico">
+
+            </div>
+
+            <div class="input-contenedor">
+                <i class="fas fa-key icon"></i>
+                <input type="password" for="password" id="password" th:field="*{password}" required
+                    autofocus="autofocus" placeholder="Contraseña">
+
+            </div>
+            <button type="submit" class="button">Registrar</button>
+            /*/mensaje de que los datos fueron ingresados exitosamente*/
+            <div th:if=${param.exito}>
+                <div class="alert alert-info">Se ha registrado exitosamente a
+                    la aplicación</div>
+            </div>
+
+            <p>Al registrarte, aceptas nuestras Condiciones de uso y Política de privacidad.</p>
+            <p>¿Ya tienes una cuenta?<a th:href="@{/login}">Iniciar Sesion</a></p>
+        </div>
+    </form>
+</body>
+
+</html>

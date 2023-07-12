@@ -1,0 +1,71 @@
+package com.fortam23.fortamjava.servicio;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.fortam23.fortamjava.controlador.dto.UsuarioRegistroDTO;
+import com.fortam23.fortamjava.modelo.Rol;
+import com.fortam23.fortamjava.modelo.Usuario;
+import com.fortam23.fortamjava.repositorio.UsuarioRepositorio;
+
+@Service
+public class UsuarioServicioImpl implements UsuarioServicio {
+
+	// import de usuario repositorio
+	private UsuarioRepositorio usuarioRepositorio;
+	// el encriptado de password
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
+
+	// constructor del paquete o clase repositorio
+	public UsuarioServicioImpl(UsuarioRepositorio usuarioRepositorio) {
+		super();
+		this.usuarioRepositorio = usuarioRepositorio;
+	}
+
+	// los datos a almacenar en la base de datos mediante get y el nombre del rol
+	// que debe almacenar
+	// este apartado es para registro
+	@Override
+	public Usuario guardar(UsuarioRegistroDTO registroDTO) {
+		Usuario usuario = new Usuario(registroDTO.getNombre(), registroDTO.getIdentificacion(), registroDTO.getEmail(),
+				passwordEncoder.encode(registroDTO.getPassword()), Arrays.asList(new Rol("ROLE_USER")));
+		return usuarioRepositorio.save(usuario);
+	}
+
+	// los datos que se toman para iniciar sesion
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		Usuario usuario = usuarioRepositorio.findByEmail(username);
+		// aqui se trabaja con if cuando el dato no se ingrese correctamente genera un
+		// mensaje de error
+		if (usuario == null) {
+			throw new UsernameNotFoundException("Usuario o password inválidos");
+		}
+		return new User(usuario.getEmail(), usuario.getPassword(), mapearAutoridadesRoles(usuario.getRoles()));
+	}
+
+	// aqui se tiene en cuenta el modelo rol donde se selecciona el nombre del rol
+	// para poder generar la lista de los usuarios
+	private Collection<? extends GrantedAuthority> mapearAutoridadesRoles(Collection<Rol> roles) {
+		return roles.stream().map(role -> new SimpleGrantedAuthority(role.getNombre_Rol()))
+				.collect(Collectors.toList());
+	}
+
+	// Aqui se listan los datos ingresados en el index.html
+	@Override
+	public List<Usuario> listarUsuarios() {
+		return usuarioRepositorio.findAll();
+	}
+}
